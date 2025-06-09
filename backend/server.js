@@ -11,24 +11,29 @@ dotenv.config();
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: 'https://udhekryqi1.onrender.com', // ✅ frontend URL
+  credentials: true
+}));
 app.use(express.json()); // Parse JSON bodies
 
-// Connect to MongoDB
+// Connect to MongoDB and start server
 mongoose.connect(process.env.MONGO_URI)
-.then(() => {
-  console.log('✅ Connected to MongoDB');
-  // Start the server only after DB is connected
-  const PORT = process.env.PORT || 5000;
-  app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
-  });
-})
-.catch((error) => {
-  console.error('❌ MongoDB connection failed:', error.message);
-});
+  .then(() => {
+    console.log('✅ Connected to MongoDB');
 
+    const PORT = process.env.PORT || 5000;
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.error('❌ MongoDB connection failed:', error.message);
+  });
+
+// Routes
 const authRoutes = require('./routes/authRoutes');
 app.use('/api/auth', authRoutes);
+
 const postRoutes = require('./routes/postRoutes');
 app.use('/api/posts', postRoutes);

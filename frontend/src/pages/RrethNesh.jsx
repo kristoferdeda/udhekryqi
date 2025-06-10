@@ -17,7 +17,7 @@ export default function RrethNesh() {
       </section>
 
       {/* Optional Image Placeholder */}
-    <img src="../../public/kryqi.jpg" alt="Our Vision" className="w-full h-full object-cover rounded-xl" />
+    <img src="../../../public/kryqi.jpg" alt="Our Vision" className="w-full h-full object-cover rounded-xl" />
 
 
       {/* Our Mission */}

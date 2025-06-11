@@ -99,7 +99,7 @@ const registerUser = async (req, res) => {
     });
     await token.save();
 
-    const verifyUrl = `http://localhost:5000/api/auth/verify/${token.token}`;
+    const verifyUrl = `${process.env.BASE_URL}/api/auth/verify/${token.token}`;
     const html = `
       <p>Hi ${user.name},</p>
       <p>Please verify your email by clicking the link below:</p>

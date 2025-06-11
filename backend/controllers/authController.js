@@ -200,7 +200,7 @@ const forgotPassword = async (req, res) => {
     const token = new VerifyToken({ userId: user._id, token: tokenString });
     await token.save();
 
-    const resetUrl = `http://localhost:3000/reset-password/${tokenString}`;
+    const resetUrl = `${process.env.CLIENT_URL}/reset-password/${tokenString}`;
     const html = `
       <p>Hi ${user.name},</p>
       <p>You requested a password reset. Click the link below to set a new password:</p>
@@ -235,6 +235,7 @@ const resetPassword = async (req, res) => {
     res.status(500).json({ message: 'Failed to reset password', error: err.message });
   }
 };
+
 
 const sendContactMessage = async (req, res) => {
   try {

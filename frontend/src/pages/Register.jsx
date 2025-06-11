@@ -34,12 +34,12 @@ export default function Register() {
 
   return (
     <div className="max-w-md mx-auto mt-10 p-6 border rounded shadow-sm">
-      <h2 className="text-2xl mb-4 font-semibold">Register</h2>
+      <h2 className="text-2xl mb-4 font-semibold">Regjistrohu</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
           name="name"
           type="text"
-          placeholder="Full Name"
+          placeholder="Emri"
           value={form.name}
           onChange={handleChange}
           className="w-full border px-3 py-2 rounded"
@@ -67,7 +67,7 @@ export default function Register() {
           type="submit"
           className="w-full bg-black text-white py-2 rounded hover:bg-gray-800"
         >
-          Register
+          Regjistrohu
         </button>
       </form>
 

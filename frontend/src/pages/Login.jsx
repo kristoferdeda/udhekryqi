@@ -69,6 +69,16 @@ export default function Login() {
         >
           Hyj
         </button>
+        <div className="text-center mt-3">
+          <p className="text-sm">
+            <a
+              href="/forgot-password"
+              className="text-red-700 hover:underline"
+            >
+              Ke harruar fjalëkalimin?
+            </a>
+          </p>
+        </div>
       </form>
 
       {message && (

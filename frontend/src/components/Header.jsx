@@ -12,43 +12,45 @@ export default function Header() {
 
   return (
     <header className="border-b border-gray-200 shadow-sm bg-white w-full">
-      {/* Top Row: Hamburger | Centered Logo | User/Auth */}
-      <div className="max-w-7xl mx-auto relative h-20 flex items-center px-4">
-        {/* Left: Hamburger (mobile only) */}
-        <div className="absolute left-4 md:hidden">
-          <button
-            onClick={() => setShowMobileNav(!showMobileNav)}
-            className="text-2xl"
-          >
-            ☰
-          </button>
-        </div>
+      <div className="max-w-6xl mx-auto h-20 flex items-center justify-between px-4 relative">
+        {/* Left: Hamburger for mobile */}
+        <button
+          onClick={() => setShowMobileNav(!showMobileNav)}
+          className="md:hidden text-2xl absolute left-4"
+        >
+          ☰
+        </button>
 
         {/* Center: Logo */}
-        <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
-          <Link to="/">
+        <div className="flex-1 flex justify-center min-w-0">
+          <Link to="/" className="flex items-center justify-center">
             <img
               src="/Logo-horizontal.png"
               alt="Udhëkryqi Logo"
-              className="h-12 md:h-16 w-auto"
+              className="h-10 md:h-16 w-auto max-w-[100%] sm:max-w-[100%] md:max-w-full transition-all duration-200"
             />
           </Link>
         </div>
 
-        {/* Right: User icon or auth */}
-        <div 
+        {/* Right: Auth Buttons/User Icon */}
+        <div
           style={{ fontFamily: 'Georgia, serif' }}
-          className="absolute right-4 flex items-center gap-2">
+          className={`absolute right-4 pr-2 sm:pr-4 flex flex-wrap justify-end ${
+            user
+              ? 'flex-row items-center gap-2'
+              : 'flex-col items-center gap-1 sm:flex-row sm:gap-2'
+          }`}
+        >
           {user ? (
             <div className="relative">
               <button
                 onClick={() => setShowMenu(!showMenu)}
-                className="w-9 h-9 rounded-full bg-gray-800 text-white text-center"
+                className="w-9 h-9 rounded-full bg-gray-800 text-white"
               >
                 {user.name[0].toUpperCase()}
               </button>
               {showMenu && (
-                <div className="absolute right-0 mt-2 bg-white border rounded shadow-lg w-40 z-10">
+                <div className="absolute right-0 mt-2 bg-white border rounded shadow-lg w-40 z-10 divide-y divide-gray-200">
                   {user.role === 'admin' ? (
                     <>
                       <Link
@@ -90,27 +92,59 @@ export default function Header() {
             </div>
           ) : (
             <>
-              <Link
-                to="/login"
-                className="px-4 py-1 border border-gray-400 rounded hover:bg-gray-100"
-              >
-                Hyj
-              </Link>
-              <Link
-                to="/register"
-                className="px-4 py-1 bg-black text-white rounded hover:bg-gray-800"
-              >
-                Rregjistrohu
-              </Link>
+              {/* Mobile HYJ dropdown */}
+              <div className="relative flex sm:hidden">
+                <button
+                  onClick={() => setShowMenu(!showMenu)}
+                  className="w-20 text-center py-1 border border-gray-400 rounded text-sm hover:bg-gray-100"
+                >
+                  HYJ
+                </button>
+                {showMenu && (
+                  <div className="absolute right-0 mt-7 bg-white border rounded shadow-lg w-36 z-10 divide-y divide-gray-200">
+                    <Link
+                      to="/login"
+                      className="block px-4 py-2 hover:bg-gray-100"
+                      onClick={() => setShowMenu(false)}
+                    >
+                      Hyj
+                    </Link>
+                    <Link
+                      to="/register"
+                      className="block px-4 py-2 hover:bg-gray-100"
+                      onClick={() => setShowMenu(false)}
+                    >
+                      Regjistrohu
+                    </Link>
+                  </div>
+                )}
+              </div>
+
+              {/* Desktop buttons */}
+              <div className="hidden sm:flex gap-2">
+                <Link
+                  to="/login"
+                  className="w-24 text-center py-1 border border-gray-400 rounded text-sm hover:bg-gray-100"
+                >
+                  Hyj
+                </Link>
+                <Link
+                  to="/register"
+                  className="w-24 text-center py-1 bg-black text-white rounded text-sm hover:bg-gray-800"
+                >
+                  Regjistrohu
+                </Link>
+              </div>
             </>
           )}
         </div>
       </div>
 
-      {/* Desktop Nav */}
-      <nav 
-      style={{ fontFamily: 'Georgia, serif' }}
-      className="hidden md:flex max-w-7xl mx-auto justify-center gap-5 px-4 py-2 text-sm font-bold">
+      {/* Desktop Navigation */}
+      <nav
+        style={{ fontFamily: 'Georgia, serif' }}
+        className="hidden md:flex max-w-6xl mx-auto justify-center gap-5 px-4 py-2 text-sm font-bold"
+      >
         <Link to="/">Home</Link>
         {categories.map((cat) => (
           <Link key={cat} to={`/category/${encodeURIComponent(cat.toLowerCase())}`}>
@@ -120,23 +154,20 @@ export default function Header() {
         <Link to="/rreth-nesh">Rreth Nesh</Link>
       </nav>
 
-      {/* Mobile Dropdown Nav */}
+      {/* Mobile Navigation */}
       {showMobileNav && (
-        <nav 
+        <nav
           style={{ fontFamily: 'Georgia, serif' }}
-          className="md:hidden px-4 pb-4 space-y-2 text-sm font-medium bg-white border-t shadow-sm">
-          <Link
-            to="/"
-            className="block"
-            onClick={() => setShowMobileNav(false)}
-          >
+          className="md:hidden max-w-6xl mx-auto px-4 pb-4 pt-2 divide-y divide-gray-200 text-sm font-medium bg-white border-t shadow-sm"
+        >
+          <Link to="/" className="block py-2" onClick={() => setShowMobileNav(false)}>
             Home
           </Link>
           {categories.map((cat) => (
             <Link
               key={cat}
               to={`/category/${encodeURIComponent(cat.toLowerCase())}`}
-              className="block"
+              className="block py-2"
               onClick={() => setShowMobileNav(false)}
             >
               {cat}
@@ -144,7 +175,7 @@ export default function Header() {
           ))}
           <Link
             to="/rreth-nesh"
-            className="block"
+            className="block py-2"
             onClick={() => setShowMobileNav(false)}
           >
             Rreth Nesh

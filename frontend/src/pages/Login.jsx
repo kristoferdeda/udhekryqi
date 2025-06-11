@@ -43,7 +43,7 @@ export default function Login() {
 
   return (
     <div className="max-w-md mx-auto mt-10 p-6 border rounded shadow-sm">
-      <h2 className="text-2xl mb-4 font-semibold">Login</h2>
+      <h2 className="text-2xl mb-4 font-semibold">Hyj</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
           name="email"
@@ -67,7 +67,7 @@ export default function Login() {
           type="submit"
           className="w-full bg-black text-white py-2 rounded hover:bg-gray-800"
         >
-          Login
+          Hyj
         </button>
       </form>
 

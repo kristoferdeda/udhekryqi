@@ -42,7 +42,7 @@ export default function Home() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto mt-14 mb-14">
+    <div className="max-w-6xl mx-auto mt-14 mb-14 px-4 sm:px-6">
       {/* 🔥 Hero Section */}
       {featured && (
         <div className="grid md:grid-cols-3 gap-6 border-b pb-14">
@@ -121,21 +121,12 @@ export default function Home() {
             key={cat}
             className={`space-y-4 pt-14 pb-14 ${index === 0 ? '' : 'border-t'}`}
           >
-            <div className="flex items-center justify-between">
-              <h2 
-                style={{ fontFamily: 'Georgia, serif' }}
-                className="text-3xl md:text-4xl font-semibold text-gray-500 mb-4 tracking-wider uppercase">
-                  {cat}
-              </h2>
-
-              <Link
-                style={{ fontFamily: 'Georgia, serif' }}
-                to={`/category/${cat}`}
-                className="text-sm uppercase font-bold text-black-700 hover:text-red-700"
-              >
-                Më shumë {cat} →
-              </Link>
-            </div>
+            <h2 
+              style={{ fontFamily: 'Georgia, serif' }}
+              className="text-3xl md:text-4xl font-semibold text-gray-500 mb-4 tracking-wider uppercase"
+            >
+              {cat}
+            </h2>
 
             <div className="grid md:grid-cols-3 gap-6">
               {catPosts.map((post) => (
@@ -178,6 +169,16 @@ export default function Home() {
                   </Link>
                 </div>
               ))}
+            </div>
+
+            <div className="pt-4 text-center">
+              <Link
+                to={`/category/${cat}`}
+                className="inline-block px-6 py-2 rounded bg-red-700 text-white text-sm font-semibold uppercase hover:bg-red-800 transition"
+                style={{ fontFamily: 'Georgia, serif' }}
+              >
+                Më shumë {cat}
+              </Link>
             </div>
           </section>
         );

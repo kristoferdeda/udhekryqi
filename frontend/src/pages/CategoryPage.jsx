@@ -35,11 +35,18 @@ export default function CategoryPage() {
     (currentPage - 1) * POSTS_PER_PAGE,
     currentPage * POSTS_PER_PAGE
   );
+  function decodeEntities(html) {
+    const txt = document.createElement('textarea');
+    txt.innerHTML = html;
+    return txt.value;
+  }
 
   const truncateText = (html, limit = 90) => {
     const clean = striptags(html || '').replace(/\s+/g, ' ').trim();
-    return clean.length > limit ? clean.slice(0, limit) + '...' : clean;
+    const decoded = decodeEntities(clean);
+    return decoded.length > limit ? decoded.slice(0, limit) + '...' : decoded;
   };
+
 
   const handleDelete = async (id) => {
     const confirmed = confirm('Delete this post?');
@@ -59,7 +66,9 @@ export default function CategoryPage() {
     <div className="max-w-6xl mx-auto px-4 py-14">
       <h1 
         style={{ fontFamily: 'Georgia, serif' }}
-        className="text-3xl font-bold mb-6 capitalize">{decodedName}
+        className="text-3xl font-bold mb-6 capitalize"
+      >
+        {decodedName}
       </h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
@@ -86,8 +95,9 @@ export default function CategoryPage() {
               <div className="p-4 space-y-2">
                 <h3 
                   style={{ fontFamily: 'Georgia, serif' }}
-                  className="text-lg font-bold group-hover:underline">
-                    {post.title}
+                  className="text-lg font-bold group-hover:underline"
+                >
+                  {post.title}
                 </h3>
                 <p className="text-xs uppercase text-red-700 font-semibold">
                   {post.author?.name || post.authorName}

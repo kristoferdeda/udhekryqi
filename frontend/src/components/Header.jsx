@@ -126,7 +126,7 @@ export default function Header() {
                   to="/login"
                   className="w-24 text-center py-1 border border-gray-400 rounded text-sm hover:bg-gray-100"
                 >
-                  Hyj
+                  Hyr
                 </Link>
                 <Link
                   to="/register"

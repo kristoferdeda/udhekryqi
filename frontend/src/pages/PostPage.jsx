@@ -314,23 +314,32 @@ export default function PostPage() {
       <div className="mt-10">
         <h3 className="text-xl font-semibold mb-2">💬 Komentet</h3>
 
-        {user && (
-          <form onSubmit={handleCommentSubmit} className="mb-6">
-            <textarea
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-              className="w-full p-3 border rounded mb-2"
-              rows={3}
-              placeholder="Shkruaj një koment..."
-            />
-            <button
-              type="submit"
-              className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 text-sm"
-            >
-              Posto Komentin
-            </button>
-          </form>
-        )}
+      {user ? (
+        <form onSubmit={handleCommentSubmit} className="mb-6">
+          <textarea
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            className="w-full p-3 border rounded mb-2"
+            rows={3}
+            placeholder="Shkruaj një koment..."
+          />
+          <button
+            type="submit"
+            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 text-sm"
+          >
+            Posto Komentin
+          </button>
+        </form>
+      ) : (
+        <p className="text-sm text-gray-600 mb-6">
+          Duhet të{' '}
+          <Link to="/login" className="text-red-600 font-medium hover:underline">
+            hyni në portal
+          </Link>{' '}
+          për të komentuar.
+        </p>
+      )}
+
 
         <div>{renderComments()}</div>
 

@@ -30,7 +30,7 @@ export default function Footer() {
           <img
             src="/Logo-horizontal.png"
             alt="Udhëkryqi"
-            className="h-16 w-auto"
+            className="h-10 md:h-16 w-auto transition-all duration-200"
           />
         </Link>
 

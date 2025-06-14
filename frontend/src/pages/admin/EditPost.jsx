@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../../contexts/AuthContext';
+import TipTapEditor from '../../components/TipTapEditor'; // ✅ added
 
 export default function EditPost() {
   const { id } = useParams();
@@ -24,15 +25,24 @@ export default function EditPost() {
   useEffect(() => {
     axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/posts/${id}`)
       .then(res => {
+        const allPredefined = ['teologji', 'filozofi', 'kulturë', 'politikë', 'histori'];
+        const loadedTags = res.data.tags || [];
+
+        const predefined = loadedTags.filter(tag => allPredefined.includes(tag));
+        const custom = loadedTags.filter(tag => !allPredefined.includes(tag));
+
         setForm({
           title: res.data.title,
           content: res.data.content,
-          tags: res.data.tags || [],
+          tags: predefined,
           media: res.data.media.length ? res.data.media : ['']
         });
+
+        setCustomTags(custom.join(', ')); // ✅ this adds them to the customTags input
       })
       .catch(() => setMessage('Failed to load post.'));
   }, [id]);
+
 
   const handleCheckbox = (tag) => {
     setForm(prev => ({
@@ -47,7 +57,6 @@ export default function EditPost() {
     e.preventDefault();
     setMessage('');
 
-    // Merge tags
     const finalTags = [
       ...form.tags,
       ...customTags
@@ -202,13 +211,14 @@ export default function EditPost() {
           />
         </div>
 
-        <textarea
-          name="content"
-          rows={8}
-          value={form.content}
-          onChange={(e) => setForm(prev => ({ ...prev, content: e.target.value }))}
-          className="w-full border px-3 py-2 rounded"
-        />
+        <div>
+          <label className="block mb-1 font-medium">Përmbajtja</label>
+          <TipTapEditor
+            key={form.content} 
+            content={form.content}
+            setContent={(val) => setForm((prev) => ({ ...prev, content: val }))}
+          />
+        </div>
 
         <button
           type="submit"

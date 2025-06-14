@@ -63,11 +63,13 @@ export default function Home() {
               <p className="text-sm md:text-base uppercase text-red-700 font-semibold mb-3">
                 {featured.author?.name}
               </p>
-              <p 
-              style={{ fontFamily: 'Georgia, serif' }}
-              className="text-gray-700 text-base md:text-lg break-words">
-                {truncateText(featured.content, 200)}
-              </p>
+              <div
+                className="text-gray-700 text-base md:text-lg break-words"
+                style={{ fontFamily: 'Georgia, serif' }}
+                dangerouslySetInnerHTML={{
+                  __html: truncateText(featured.content, 200),
+                }}
+              />
             </Link>
           </div>
 
@@ -96,14 +98,15 @@ export default function Home() {
                 </Link>
               ))}
             </div>
-
-            <Link
-              to="/all"
-              style={{ fontFamily: 'Georgia, serif' }}
-              className="mt-4 inline-block text-sm font-bold uppercase text-black hover:text-red-700"
-            >
-              TË TJERË →
-            </Link>
+            <div className="pt-4">
+              <Link
+                to="/all"
+                className="inline-block px-6 py-2 rounded bg-red-700 text-white text-sm font-semibold uppercase hover:bg-red-800 transition"
+                style={{ fontFamily: 'Georgia, serif' }}
+              >
+                TË TJERË →
+              </Link>
+            </div>
           </div>
         </div>
       )}
@@ -162,9 +165,11 @@ export default function Home() {
                       <p className="text-xs md:text-sm uppercase text-red-700 font-semibold">
                         {post.author?.name}
                       </p>
-                      <p className="text-sm md:text-base text-gray-600 break-words">
-                        {truncateText(post.content, 90)}
-                      </p>
+                      <div 
+                        className="text-sm md:text-base text-gray-600 break-words"
+                        style={{ fontFamily: 'Georgia, serif' }}
+                        dangerouslySetInnerHTML={{__html: truncateText(featured.content, 90),}}
+                      />
                     </div>
                   </Link>
                 </div>

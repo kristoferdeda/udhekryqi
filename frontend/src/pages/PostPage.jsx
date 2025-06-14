@@ -15,6 +15,7 @@ export default function PostPage() {
   const [newComment, setNewComment] = useState('');
   const [activeReplyId, setActiveReplyId] = useState(null);
   const [replyText, setReplyText] = useState('');
+  const [showShare, setShowShare] = useState(false);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -139,7 +140,7 @@ export default function PostPage() {
   const renderComments = (parentId = null, level = 0) => {
     return comments
       .filter(comment => comment.parentId === parentId)
-      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Newest first
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
       .map(comment => (
         <div key={comment._id} className={`ml-${level * 4} border-l pl-4 mt-4`}>
           <p className="text-sm text-gray-600 mb-1">
@@ -259,6 +260,43 @@ export default function PostPage() {
         className="prose prose-lg max-w-none mb-6 [&>p]:mb-4"
         dangerouslySetInnerHTML={{ __html: post.content }}
       />
+
+      <div className="relative mb-6">
+        <button
+          onClick={() => setShowShare(!showShare)}
+          className="bg-red-700 text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-red-800"
+        >
+          Ndaje Artikullin
+        </button>
+        {showShare && (
+          <div className="absolute mt-2 bg-red-700 shadow-md rounded p-3 border border-gray-200 z-10">
+            <a
+              href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block text-white font-semibold hover:underline text-sm mb-2"
+            >
+              Facebook
+            </a>
+            <a
+              href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(post.title)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block text-white font-semibold hover:underline text-sm mb-2"
+            >
+              X
+            </a>
+            <a
+              href={`https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(window.location.href)}&title=${encodeURIComponent(post.title)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block text-white font-semibold hover:underline text-sm mb-2"
+            >
+              LinkedIn
+            </a>
+          </div>
+        )}
+      </div>
 
       <div className="mb-6 flex items-center gap-3">
         <button

@@ -43,7 +43,7 @@ export default function Login() {
 
   return (
     <div className="max-w-md mx-auto mt-10 p-6 border rounded shadow-sm">
-      <h2 className="text-2xl mb-4 font-semibold">Hyj</h2>
+      <h2 className="text-2xl mb-4 font-semibold">Hyr</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
           name="email"
@@ -67,15 +67,23 @@ export default function Login() {
           type="submit"
           className="w-full bg-black text-white py-2 rounded hover:bg-gray-800"
         >
-          Hyj
+          Hyr
         </button>
         <div className="text-center mt-3">
           <p className="text-sm">
+            <div>
             <a
               href="/forgot-password"
-              className="text-red-700 hover:underline"
+              className="text-black hover:underline"
             >
               Ke harruar fjalëkalimin?
+            </a>
+            </div>
+            <a
+              href="/register"
+              className="text-black hover:underline"
+            >
+              Nuk jeni regjistruar?
             </a>
           </p>
         </div>

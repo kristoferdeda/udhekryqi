@@ -96,9 +96,9 @@ export default function Header() {
               <div className="relative flex sm:hidden">
                 <button
                   onClick={() => setShowMenu(!showMenu)}
-                  className="w-20 text-center py-1 border border-gray-400 rounded text-sm hover:bg-gray-100"
+                  className="w-10 h-10 flex items-center justify-center border border-gray-400 rounded-full text-sm font-semibold hover:bg-gray-100"
                 >
-                  HYJ
+                  Hyr
                 </button>
                 {showMenu && (
                   <div className="absolute right-0 mt-7 bg-white border rounded shadow-lg w-36 z-10 divide-y divide-gray-200">
@@ -107,7 +107,7 @@ export default function Header() {
                       className="block px-4 py-2 hover:bg-gray-100"
                       onClick={() => setShowMenu(false)}
                     >
-                      Hyj
+                      Hyr
                     </Link>
                     <Link
                       to="/register"

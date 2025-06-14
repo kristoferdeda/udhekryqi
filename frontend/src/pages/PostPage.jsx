@@ -239,16 +239,24 @@ export default function PostPage() {
         </div>
       )}
 
-      {post.media?.length > 0 && (
+      {post.media?.filter(url => url && url.trim() !== '').length > 0 && (
         <div className="mb-4">
-          {post.media.map((url, idx) => (
-            <img key={idx} src={url} alt={`media-${idx}`} className="rounded w-full mb-4" />
-          ))}
+          {post.media
+            .filter(url => url && url.trim() !== '')
+            .map((url, idx) => (
+              <img
+                key={idx}
+                src={url}
+                alt={`media-${idx}`}
+                className="rounded w-full mb-4"
+                onError={(e) => (e.target.style.display = 'none')}
+              />
+            ))}
         </div>
       )}
 
       <div
-        className="prose prose-lg max-w-none mb-6"
+        className="prose prose-lg max-w-none mb-6 [&>p]:mb-4"
         dangerouslySetInnerHTML={{ __html: post.content }}
       />
 

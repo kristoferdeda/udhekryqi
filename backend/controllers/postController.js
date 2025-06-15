@@ -154,6 +154,45 @@ const deleteComment = async (req, res) => {
   }
 };
 
+// Social media preview route
+const getPostPreview = async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+    if (!post) return res.status(404).send('Post not found');
+
+    const cleanDescription = post.content
+      .replace(/<[^>]+>/g, '')
+      .replace(/&nbsp;/g, ' ')
+      .slice(0, 160);
+
+    const image = post.media?.[0] || 'https://udhekryqi.com/default.jpg'; // Use your fallback image
+
+    res.setHeader('Content-Type', 'text/html');
+    res.send(`
+      <!DOCTYPE html>
+      <html lang="sq">
+        <head>
+          <meta charset="UTF-8" />
+          <title>${post.title}</title>
+          <meta property="og:title" content="${post.title}" />
+          <meta property="og:description" content="${cleanDescription}" />
+          <meta property="og:image" content="${image}" />
+          <meta property="og:url" content="https://udhekryqi.com/posts/${post._id}" />
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta name="twitter:title" content="${post.title}" />
+          <meta name="twitter:description" content="${cleanDescription}" />
+          <meta name="twitter:image" content="${image}" />
+          <meta http-equiv="refresh" content="0; url=/posts/${post._id}" />
+        </head>
+        <body>
+          <p>Redirecting...</p>
+        </body>
+      </html>
+    `);
+  } catch (err) {
+    res.status(500).send('Internal server error');
+  }
+};
 
 module.exports = {
   createPost,
@@ -163,5 +202,6 @@ module.exports = {
   deletePost,
   toggleLike,
   addComment,
-  deleteComment
+  deleteComment,
+  getPostPreview
 };

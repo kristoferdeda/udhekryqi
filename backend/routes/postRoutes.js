@@ -1,7 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const cors = require('cors');
-router.use(cors());
 
 const {
   createPost,
@@ -11,7 +9,8 @@ const {
   deletePost,
   toggleLike,
   addComment,
-  deleteComment
+  deleteComment,
+  getPostPreview
 } = require('../controllers/postController');
 
 const { verifyToken, isAdmin } = require('../middleware/auth');
@@ -28,5 +27,7 @@ router.delete('/:id', verifyToken, isAdmin, deletePost);
 router.post('/:id/like', verifyToken, toggleLike);
 router.post('/:id/comments', verifyToken, addComment);
 router.delete('/:postId/comments/:commentId', verifyToken, deleteComment);
+// Public preview route
+router.get('/preview/:id', getPostPreview);
 
 module.exports = router;

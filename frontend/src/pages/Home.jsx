@@ -168,7 +168,7 @@ export default function Home() {
                       <div 
                         className="text-sm md:text-base text-gray-600 break-words"
                         style={{ fontFamily: 'Georgia, serif' }}
-                        dangerouslySetInnerHTML={{__html: truncateText(featured.content, 90),}}
+                        dangerouslySetInnerHTML={{__html: truncateText(post.content, 90),}}
                       />
                     </div>
                   </Link>

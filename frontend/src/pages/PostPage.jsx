@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
+import { Helmet } from 'react-helmet';
 
 export default function PostPage() {
   const { id } = useParams();
@@ -170,10 +171,7 @@ export default function PostPage() {
           </div>
 
           {user && activeReplyId === comment._id && (
-            <form
-              onSubmit={(e) => handleReplySubmit(e, comment._id)}
-              className="mt-2"
-            >
+            <form onSubmit={(e) => handleReplySubmit(e, comment._id)} className="mt-2">
               <textarea
                 className="w-full p-2 border rounded mb-2"
                 rows={2}
@@ -209,6 +207,16 @@ export default function PostPage() {
 
   return (
     <div className="max-w-3xl mx-auto p-6">
+      <Helmet>
+        <title>{post.title}</title>
+        <meta name="description" content={post.content.replace(/<[^>]+>/g, '').slice(0, 150)} />
+        <meta property="og:title" content={post.title} />
+        <meta property="og:description" content={post.content.replace(/<[^>]+>/g, '').slice(0, 150)} />
+        <meta property="og:url" content={window.location.href} />
+        {post.media?.[0] && <meta property="og:image" content={post.media[0]} />}
+        <meta name="twitter:card" content="summary_large_image" />
+      </Helmet>
+
       <h1 className="text-3xl font-bold font-serif mb-2">{post.title}</h1>
       <p className="text-sm text-gray-500 mb-4">
         Nga <span className="font-medium">{post.author?.name || post.authorName}</span> •{' '}
@@ -225,41 +233,24 @@ export default function PostPage() {
 
       {user?.role === 'admin' && (
         <div className="mb-4 flex gap-3">
-          <Link
-            to={`/edit-post/${post._id}`}
-            className="px-4 py-1 border rounded text-sm font-medium hover:bg-gray-100"
-          >
+          <Link to={`/edit-post/${post._id}`} className="px-4 py-1 border rounded text-sm font-medium hover:bg-gray-100">
             ✏️ Ndrysho Artikullin
           </Link>
-          <button
-            onClick={handleDelete}
-            className="px-4 py-1 border border-red-600 text-red-600 rounded text-sm font-medium hover:bg-red-50"
-          >
+          <button onClick={handleDelete} className="px-4 py-1 border border-red-600 text-red-600 rounded text-sm font-medium hover:bg-red-50">
             ❌ Fshij Artikullin
           </button>
         </div>
       )}
 
-      {post.media?.filter(url => url && url.trim() !== '').length > 0 && (
+      {post.media?.length > 0 && (
         <div className="mb-4">
-          {post.media
-            .filter(url => url && url.trim() !== '')
-            .map((url, idx) => (
-              <img
-                key={idx}
-                src={url}
-                alt={`media-${idx}`}
-                className="rounded w-full mb-4"
-                onError={(e) => (e.target.style.display = 'none')}
-              />
-            ))}
+          {post.media.filter(url => url && url.trim()).map((url, idx) => (
+            <img key={idx} src={url} alt={`media-${idx}`} className="rounded w-full mb-4" onError={(e) => (e.target.style.display = 'none')} />
+          ))}
         </div>
       )}
 
-      <div
-        className="prose prose-lg max-w-none mb-6 [&>p]:mb-4"
-        dangerouslySetInnerHTML={{ __html: post.content }}
-      />
+      <div className="prose prose-lg max-w-none mb-6 [&>p]:mb-4" dangerouslySetInnerHTML={{ __html: post.content }} />
 
       <div className="relative mb-6">
         <button
@@ -313,33 +304,31 @@ export default function PostPage() {
 
       <div className="mt-10">
         <h3 className="text-xl font-semibold mb-2">💬 Komentet</h3>
-
-      {user ? (
-        <form onSubmit={handleCommentSubmit} className="mb-6">
-          <textarea
-            value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-            className="w-full p-3 border rounded mb-2"
-            rows={3}
-            placeholder="Shkruaj një koment..."
-          />
-          <button
-            type="submit"
-            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 text-sm"
-          >
-            Posto Komentin
-          </button>
-        </form>
-      ) : (
-        <p className="text-sm text-gray-600 mb-6">
-          Duhet të{' '}
-          <Link to="/login" className="text-red-600 font-medium hover:underline">
-            hyni në portal
-          </Link>{' '}
-          për të komentuar.
-        </p>
-      )}
-
+        {user ? (
+          <form onSubmit={handleCommentSubmit} className="mb-6">
+            <textarea
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              className="w-full p-3 border rounded mb-2"
+              rows={3}
+              placeholder="Shkruaj një koment..."
+            />
+            <button
+              type="submit"
+              className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 text-sm"
+            >
+              Posto Komentin
+            </button>
+          </form>
+        ) : (
+          <p className="text-sm text-gray-600 mb-6">
+            Duhet të{' '}
+            <Link to="/login" className="text-red-600 font-medium hover:underline">
+              hyni në portal
+            </Link>{' '}
+            për të komentuar.
+          </p>
+        )}
 
         <div>{renderComments()}</div>
 

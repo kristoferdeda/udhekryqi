@@ -205,16 +205,26 @@ export default function PostPage() {
   if (error) return <div className="text-center text-red-500 mt-10">{error}</div>;
   if (!post) return <div className="text-center mt-10">Loading...</div>;
 
+  const metaTitle = post.title;
+  const metaDescription = post.content?.replace(/<[^>]+>/g, '').slice(0, 150);
+  const metaImage = post.media?.[0];
+  const metaUrl = window.location.href;
+
   return (
     <div className="max-w-3xl mx-auto p-6">
       <Helmet>
-        <title>{post.title}</title>
-        <meta name="description" content={post.content.replace(/<[^>]+>/g, '').slice(0, 150)} />
-        <meta property="og:title" content={post.title} />
-        <meta property="og:description" content={post.content.replace(/<[^>]+>/g, '').slice(0, 150)} />
-        <meta property="og:url" content={window.location.href} />
-        {post.media?.[0] && <meta property="og:image" content={post.media[0]} />}
+        <title>{metaTitle}</title>
+        <meta name="description" content={metaDescription} />
+        <meta property="og:type" content="article" />
+        <meta property="og:title" content={metaTitle} />
+        <meta property="og:description" content={metaDescription} />
+        <meta property="og:image" content={metaImage} />
+        <meta property="og:url" content={metaUrl} />
+        <meta property="og:site_name" content="Udhëkryqi" />
         <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={metaTitle} />
+        <meta name="twitter:description" content={metaDescription} />
+        <meta name="twitter:image" content={metaImage} />
       </Helmet>
 
       <h1 className="text-3xl font-bold font-serif mb-2">{post.title}</h1>
@@ -262,7 +272,7 @@ export default function PostPage() {
         {showShare && (
           <div className="absolute mt-2 bg-red-700 shadow-md rounded p-3 border border-gray-200 z-10">
             <a
-              href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`}
+              href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(metaUrl)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="block text-white font-semibold hover:underline text-sm mb-2"
@@ -270,7 +280,7 @@ export default function PostPage() {
               Facebook
             </a>
             <a
-              href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(post.title)}`}
+              href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(metaUrl)}&text=${encodeURIComponent(metaTitle)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="block text-white font-semibold hover:underline text-sm mb-2"
@@ -278,7 +288,7 @@ export default function PostPage() {
               X
             </a>
             <a
-              href={`https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(window.location.href)}&title=${encodeURIComponent(post.title)}`}
+              href={`https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(metaUrl)}&title=${encodeURIComponent(metaTitle)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="block text-white font-semibold hover:underline text-sm mb-2"

@@ -250,7 +250,7 @@ export default function PostPage() {
         </div>
       )}
 
-      <div className="prose prose-lg max-w-none mb-6 [&>p]:mb-4" dangerouslySetInnerHTML={{ __html: post.content }} />
+      <div className="prose max-w-none mb-6 [&>p]:mb-1 [&>p]:mt-1" dangerouslySetInnerHTML={{ __html: post.content }} />
 
       <div className="relative mb-6">
         <button

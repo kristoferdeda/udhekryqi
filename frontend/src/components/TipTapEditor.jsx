@@ -31,18 +31,21 @@ export default function TiptapEditor({ content, setContent }) {
       {/* Toolbar */}
       <div className="flex gap-2 mb-2 border-b pb-2">
         <button
+          type="button"
           onClick={() => editor.chain().focus().toggleBold().run()}
           className={editor.isActive('bold') ? 'font-bold text-red-700' : ''}
         >
           Bold
         </button>
         <button
+          type="button"
           onClick={() => editor.chain().focus().toggleItalic().run()}
           className={editor.isActive('italic') ? 'italic text-red-700' : ''}
         >
           Italic
         </button>
         <button
+          type="button"
           onClick={() => editor.chain().focus().toggleUnderline().run()}
           className={editor.isActive('underline') ? 'underline text-red-700' : ''}
         >

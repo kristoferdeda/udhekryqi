@@ -61,7 +61,7 @@ export default function Home() {
                 className="text-3xl md:text-4xl font-bold mb-2">{featured.title}
               </h1>
               <p className="text-sm md:text-base uppercase text-red-700 font-semibold mb-3">
-                {featured.author?.name}
+                {featured.authorName || featured.author?.name}
               </p>
               <div
                 className="text-gray-700 text-base md:text-lg break-words"
@@ -93,7 +93,7 @@ export default function Home() {
                     {post.title}
                   </h4>
                   <p className="text-xs md:text-sm text-red-700 uppercase font-medium">
-                    {post.author?.name}
+                    {post.authorName || post.author?.name}
                   </p>
                 </Link>
               ))}
@@ -163,7 +163,7 @@ export default function Home() {
                           {post.title}
                       </h3>
                       <p className="text-xs md:text-sm uppercase text-red-700 font-semibold">
-                        {post.author?.name}
+                        {post.authorName || post.author?.name}
                       </p>
                       <div 
                         className="text-sm md:text-base text-gray-600 break-words"

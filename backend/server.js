@@ -31,6 +31,6 @@ const clientPath = path.join(__dirname, '../frontend/dist');
 app.use(express.static(clientPath));
 
 // Catch-all for client-side routing – **must name wildcard!**
-app.all('/*catchall', (req, res) => {
+app.all('/*any', (req, res) => {
   res.sendFile(path.join(clientPath, 'index.html'));
 });

@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../../contexts/AuthContext';
-import TipTapEditor from '../../components/TipTapEditor'; // ✅ added
+import TipTapEditor from '../../components/TipTapEditor';
 
 export default function EditPost() {
   const { id } = useParams();
@@ -14,7 +14,8 @@ export default function EditPost() {
     title: '',
     content: '',
     tags: [],
-    media: ['']
+    media: [''],
+    authorName: '',
   });
   const [customTags, setCustomTags] = useState('');
   const [message, setMessage] = useState('');
@@ -25,24 +26,22 @@ export default function EditPost() {
   useEffect(() => {
     axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/posts/${id}`)
       .then(res => {
-        const allPredefined = ['teologji', 'filozofi', 'kulturë', 'politikë', 'histori'];
         const loadedTags = res.data.tags || [];
-
-        const predefined = loadedTags.filter(tag => allPredefined.includes(tag));
-        const custom = loadedTags.filter(tag => !allPredefined.includes(tag));
+        const predefined = loadedTags.filter(tag => allTags.includes(tag));
+        const custom = loadedTags.filter(tag => !allTags.includes(tag));
 
         setForm({
           title: res.data.title,
           content: res.data.content,
           tags: predefined,
-          media: res.data.media.length ? res.data.media : ['']
+          media: res.data.media.length ? res.data.media : [''],
+          authorName: res.data.authorName || '',
         });
 
-        setCustomTags(custom.join(', ')); // ✅ this adds them to the customTags input
+        setCustomTags(custom.join(', '));
       })
       .catch(() => setMessage('Failed to load post.'));
   }, [id]);
-
 
   const handleCheckbox = (tag) => {
     setForm(prev => ({
@@ -70,7 +69,6 @@ export default function EditPost() {
     if (form.media[0] instanceof File) {
       try {
         setUploading(true);
-
         const formData = new FormData();
         formData.append('file', form.media[0]);
         formData.append('upload_preset', import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET);
@@ -98,6 +96,7 @@ export default function EditPost() {
           ...form,
           tags: finalTags,
           media: finalMedia,
+          authorName: form.authorName,
         },
         {
           headers: { Authorization: `Bearer ${token}` }
@@ -105,6 +104,7 @@ export default function EditPost() {
       );
       navigate(`/posts/${id}`);
     } catch (err) {
+      console.error(err);
       setMessage('Failed to update post.');
     }
   };
@@ -128,12 +128,23 @@ export default function EditPost() {
       <form onSubmit={handleSubmit} className="space-y-6">
         <input
           type="text"
-          name="title"
-          placeholder="Title"
+          placeholder="Titulli"
           value={form.title}
           onChange={(e) => setForm(prev => ({ ...prev, title: e.target.value }))}
           className="w-full border px-3 py-2 rounded"
+          required
         />
+
+        <div>
+          <label className="block mb-1 font-medium">Emri i Autorit (opsionale)</label>
+          <input
+            type="text"
+            placeholder="Shkruani emrin që do shfaqet"
+            value={form.authorName}
+            onChange={(e) => setForm(prev => ({ ...prev, authorName: e.target.value }))}
+            className="w-full border px-3 py-2 rounded"
+          />
+        </div>
 
         <div>
           <label className="block mb-1 font-medium">Foto</label>
@@ -161,7 +172,6 @@ export default function EditPost() {
           {typeof form.media[0] === 'string' && (
             <input
               type="text"
-              name="media"
               placeholder="Media URL"
               value={form.media[0]}
               onChange={(e) => setForm(prev => ({ ...prev, media: [e.target.value] }))}
@@ -175,7 +185,7 @@ export default function EditPost() {
                 htmlFor="file-upload"
                 className="inline-block cursor-pointer bg-gray-800 text-white px-4 py-2 rounded hover:bg-black"
               >
-                {form.media[0] instanceof File ? form.media[0].name : 'Choose File'}
+                {form.media[0] instanceof File ? form.media[0].name : 'Zgjidh Foto'}
               </label>
               <input
                 id="file-upload"
@@ -214,7 +224,7 @@ export default function EditPost() {
         <div>
           <label className="block mb-1 font-medium">Përmbajtja</label>
           <TipTapEditor
-            key={form.content} 
+            key={form.content}
             content={form.content}
             setContent={(val) => setForm((prev) => ({ ...prev, content: val }))}
           />
@@ -225,7 +235,7 @@ export default function EditPost() {
           className="bg-black text-white px-6 py-2 rounded hover:bg-gray-900"
           disabled={uploading}
         >
-          {uploading ? 'Updating...' : 'Ndrysho Artikullin'}
+          {uploading ? 'Duke ngarkuar...' : 'Ndrysho Artikullin'}
         </button>
 
         {message && <p className="text-red-600">{message}</p>}

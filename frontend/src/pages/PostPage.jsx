@@ -219,9 +219,10 @@ export default function PostPage() {
 
       <h1 className="text-3xl font-bold font-serif mb-2">{post.title}</h1>
       <p className="text-sm text-gray-500 mb-4">
-        Nga <span className="font-medium">{post.author?.name || post.authorName}</span> •{' '}
+        Nga <span className="font-medium">{post.authorName || post.author?.name}</span> •{' '}
         {new Date(post.createdAt).toLocaleDateString()}
       </p>
+
 
       <div className="mb-4 flex flex-wrap gap-2">
         {post.tags.map((tag, idx) => (

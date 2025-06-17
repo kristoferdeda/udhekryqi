@@ -9,6 +9,7 @@ export default function NewPost() {
   const navigate = useNavigate();
 
   const [title, setTitle] = useState('');
+  const [authorName, setAuthorName] = useState('');
   const [tags, setTags] = useState([]);
   const [customTags, setCustomTags] = useState('');
   const [media, setMedia] = useState(['']);
@@ -55,15 +56,20 @@ export default function NewPost() {
     }
 
     try {
+      const payload = {
+        title,
+        content,
+        tags: finalTags,
+        media: finalMedia,
+      };
+
+      if (user?.role === 'admin' && authorName.trim()) {
+        payload.authorName = authorName.trim();
+      }
+
       const res = await axios.post(
         `${import.meta.env.VITE_API_BASE_URL}/api/posts`,
-        {
-          title,
-          content,
-          tags: finalTags,
-          media: finalMedia,
-          author: user.name,
-        },
+        payload,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -94,6 +100,17 @@ export default function NewPost() {
           className="w-full border px-3 py-2 rounded"
           required
         />
+
+        {/* Author name field for admin */}
+        {user?.role === 'admin' && (
+          <input
+            type="text"
+            placeholder="Emri i autorit"
+            value={authorName}
+            onChange={(e) => setAuthorName(e.target.value)}
+            className="w-full border px-3 py-2 rounded"
+          />
+        )}
 
         {/* Tag selection */}
         <div>

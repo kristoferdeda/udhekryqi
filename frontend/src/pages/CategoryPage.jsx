@@ -100,7 +100,7 @@ export default function CategoryPage() {
                   {post.title}
                 </h3>
                 <p className="text-xs uppercase text-red-700 font-semibold">
-                  {post.author?.name || post.authorName}
+                  {post.authorName || post.author?.name}
                 </p>
                 <p className="text-sm text-gray-600 break-words">
                   {truncateText(post.content)}

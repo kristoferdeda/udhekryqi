@@ -1,4 +1,3 @@
-// server.js
 const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
@@ -11,8 +10,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Connect to DB...
-mongoose.connect(process.env.MONGO_URI)
+mongoose
+  .connect(process.env.MONGO_URI)
   .then(() => {
     console.log('✅ Connected to MongoDB');
     const PORT = process.env.PORT || 5000;
@@ -26,11 +25,11 @@ const postRoutes = require('./routes/postRoutes');
 app.use('/api/auth', authRoutes);
 app.use('/api/posts', postRoutes);
 
-// Serve frontend
+// Serve static frontend (adjust path if needed)
 const clientPath = path.join(__dirname, '../frontend/dist');
 app.use(express.static(clientPath));
 
-// Catch-all for client-side routing – **must name wildcard!**
-app.all('/*any', (req, res) => {
+// 🎯 Catch-all for client-side routing (name the wildcard!)
+app.all('/*catchall', (req, res) => {
   res.sendFile(path.join(clientPath, 'index.html'));
 });

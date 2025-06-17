@@ -14,8 +14,11 @@ const createPost = async (req, res) => {
       tags,
       media,
       author: user._id,
-      authorName: user.name,
+      authorName: user.role === 'admin' && req.body.authorName?.trim()
+        ? req.body.authorName.trim()
+        : user.name,
     });
+
 
     res.status(201).json(newPost);
   } catch (err) {
@@ -163,52 +166,36 @@ const getPostPreview = async (req, res) => {
     const cleanDescription = post.content
       .replace(/<[^>]+>/g, '')
       .replace(/&nbsp;/g, ' ')
-      .slice(0, 160)
-      .trim();
+      .slice(0, 160);
 
-    const image = post.media?.[0] || 'https://udhekryqi.com/default.jpg';
-
-    const author = post.authorName || 'Redaksia Udhekryqi';
-    const published = new Date(post.createdAt).toISOString();
+    const image = post.media?.[0] || 'https://udhekryqi.com/default.jpg'; // Use your fallback image
 
     res.setHeader('Content-Type', 'text/html');
-    res.send(`<!DOCTYPE html>
-<html lang="sq">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${post.title}</title>
-  
-  <!-- Open Graph -->
-  <meta property="og:type" content="article" />
-  <meta property="og:site_name" content="Udhëkryqi" />
-  <meta property="og:title" content="${post.title}" />
-  <meta property="og:description" content="${cleanDescription}" />
-  <meta property="og:image" content="${image}" />
-  <meta property="og:url" content="https://udhekryqi.com/posts/${post._id}" />
-  <meta property="article:author" content="${author}" />
-  <meta property="article:published_time" content="${published}" />
-
-  <!-- Twitter -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:site" content="@udhekryqi" />
-  <meta name="twitter:title" content="${post.title}" />
-  <meta name="twitter:description" content="${cleanDescription}" />
-  <meta name="twitter:image" content="${image}" />
-
-  <!-- Redirect -->
-  <meta http-equiv="refresh" content="0; url=https://udhekryqi.com/posts/${post._id}" />
-</head>
-<body>
-  <p>Redirecting to article...</p>
-</body>
-</html>`);
+    res.send(`
+      <!DOCTYPE html>
+      <html lang="sq">
+        <head>
+          <meta charset="UTF-8" />
+          <title>${post.title}</title>
+          <meta property="og:title" content="${post.title}" />
+          <meta property="og:description" content="${cleanDescription}" />
+          <meta property="og:image" content="${image}" />
+          <meta property="og:url" content="https://udhekryqi.com/posts/${post._id}" />
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta name="twitter:title" content="${post.title}" />
+          <meta name="twitter:description" content="${cleanDescription}" />
+          <meta name="twitter:image" content="${image}" />
+          <meta http-equiv="refresh" content="0; url=/posts/${post._id}" />
+        </head>
+        <body>
+          <p>Redirecting...</p>
+        </body>
+      </html>
+    `);
   } catch (err) {
-    console.error('Preview Error:', err);
     res.status(500).send('Internal server error');
   }
 };
-
 
 module.exports = {
   createPost,

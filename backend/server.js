@@ -12,66 +12,76 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// 1) BOT PREVIEW for /posts/:id
-app.get('/posts/:id', async (req, res) => {
-  const ua    = req.headers['user-agent'] || '';
-  const isBot = /facebookexternalhit|twitterbot|linkedinbot|discordbot|telegrambot|whatsapp/i.test(ua);
+// Precompile a broader bot‐UA regex:
+// facebookexternalhit, Facebot, twitterbot, linkedinbot, discordbot, telegrambot, whatsapp, slackbot
+const BOT_REGEX = /(facebookexternalhit|facebot|twitterbot|linkedinbot|discordbot|telegrambot|whatsapp|slackbot)/i;
 
-  if (isBot) {
+// Helper to strip trailing slash from CLIENT_URL
+const baseURL = (process.env.CLIENT_URL || '').replace(/\/$/, '');
+
+// 1) BOT PREVIEW handler for both GET and HEAD
+['get','head'].forEach(method => {
+  app[method]('/posts/:id', async (req, res, next) => {
+    const ua = req.headers['user-agent'] || '';
+    if (!BOT_REGEX.test(ua)) {
+      // Not a bot → pass through to React SPA
+      return next();
+    }
+
     try {
       const post = await Post.findById(req.params.id);
       if (!post) return res.status(404).send('Not found');
 
-      const desc = (post.content || '')
+      const description = (post.content || '')
         .replace(/<[^>]+>/g, '')
         .slice(0, 160);
-      const img = post.media?.[0] || `${process.env.CLIENT_URL}/Logo-horizontal.png`;
-      const url = `${process.env.CLIENT_URL}/posts/${post._id}`;
+      const imageUrl = post.media?.[0] || `${baseURL}/Logo-horizontal.png`;
+      const postUrl  = `${baseURL}/posts/${post._id}`;
 
       return res.send(`<!DOCTYPE html>
 <html lang="sq">
 <head>
   <meta charset="utf-8">
   <title>${post.title}</title>
-  <meta name="description"       content="${desc}">
+  <meta name="description"       content="${description}">
   <meta property="og:type"        content="article">
   <meta property="og:title"       content="${post.title}">
-  <meta property="og:description" content="${desc}">
-  <meta property="og:image"       content="${img}">
-  <meta property="og:url"         content="${url}">
+  <meta property="og:description" content="${description}">
+  <meta property="og:image"       content="${imageUrl}">
+  <meta property="og:url"         content="${postUrl}">
   <meta name="twitter:card"       content="summary_large_image">
-  <meta http-equiv="refresh"      content="0; url=${url}">
-</head><body>Redirecting…</body></html>`);
+  <meta http-equiv="refresh"      content="0; url=${postUrl}">
+</head>
+<body>Redirecting…</body></html>`);
     } catch (err) {
       console.error('Preview error:', err);
       return res.status(500).send('Error generating preview');
     }
-  }
-
-  // Not a bot → fall through to React
-  res.sendFile(path.join(__dirname, 'client/dist/index.html'));
+  });
 });
 
-// 2) YOUR API ROUTES
+// 2) API routes
 app.use('/api/auth',  require('./routes/authRoutes'));
 app.use('/api/posts', require('./routes/postRoutes'));
 
-// 3) STATIC ASSETS (React build)
+// 3) Serve React build assets
 app.use(express.static(path.join(__dirname, 'client/dist')));
 
-// 4) CATCH-ALL (client-side routing)
-//    This RegExp matches any path (without confusing path-to-regexp)
+// 4) Catch-all: for any other route, send React app
 app.get(/.*/, (req, res) => {
   res.sendFile(path.join(__dirname, 'client/dist/index.html'));
 });
 
-// 5) START SERVER & CONNECT DB
-mongoose.connect(process.env.MONGO_URI, { useNewUrlParser:true, useUnifiedTopology:true })
-  .then(() => {
-    const PORT = process.env.PORT || 5000;
-    app.listen(PORT, () => console.log(`🚀 Listening on port ${PORT}`));
-  })
-  .catch(err => {
-    console.error('DB connection failed:', err);
-    process.exit(1);
-  });
+// 5) Connect to MongoDB & start server
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser:    true,
+  useUnifiedTopology: true,
+})
+.then(() => {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => console.log(`🚀 Listening on port ${PORT}`));
+})
+.catch(err => {
+  console.error('DB connection failed:', err);
+  process.exit(1);
+});

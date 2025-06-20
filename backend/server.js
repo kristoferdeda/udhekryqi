@@ -1,86 +1,77 @@
-const express = require('express');
+// server.js
+const express  = require('express');
 const mongoose = require('mongoose');
-const dotenv = require('dotenv');
-const cors = require('cors');
-const path = require('path');
-const Post = require('./models/Post'); // Your Post model
+const dotenv   = require('dotenv');
+const cors     = require('cors');
+const path     = require('path');
+const Post     = require('./models/Post');
 
 dotenv.config();
-
 const app = express();
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI)
-.then(() => {
-  console.log('✅ Connected to MongoDB');
-  const PORT = process.env.PORT || 5000;
-  app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
-  });
-})
-.catch(err => {
-  console.error('❌ MongoDB connection failed:', err.message);
-  process.exit(1);
-});
-
-// Social media preview route (must be BEFORE /api/posts routes)
+// 1) BOT PREVIEW for /posts/:id
 app.get('/posts/:id', async (req, res) => {
-  const userAgent = req.headers['user-agent'] || '';
-  const isBot = /facebookexternalhit|twitterbot|linkedinbot|discordbot|telegrambot|whatsapp/i.test(userAgent);
-  const postId = req.params.id;
+  const ua    = req.headers['user-agent'] || '';
+  const isBot = /facebookexternalhit|twitterbot|linkedinbot|discordbot|telegrambot|whatsapp/i.test(ua);
 
   if (isBot) {
     try {
-      const post = await Post.findById(postId);
-      if (!post) return res.status(404).send('Post not found');
+      const post = await Post.findById(req.params.id);
+      if (!post) return res.status(404).send('Not found');
 
-      // Clean description for meta
-      const description = (post.content || '').replace(/<[^>]+>/g, '').slice(0, 160) || 'Lexo artikullin në Udhëkryqi.';
-      const imageUrl = post.media?.[0] || process.env.DEFAULT_IMAGE_URL || 'https://udhekryqi.com/Logo-horizontal.png';
-      const frontendUrl = process.env.FRONTEND_URL
-      const fullUrl = `${frontendUrl}/posts/${post._id}`;
+      const desc = (post.content || '')
+        .replace(/<[^>]+>/g, '')
+        .slice(0, 160);
+      const img = post.media?.[0] || `${process.env.CLIENT_URL}/Logo-horizontal.png`;
+      const url = `${process.env.CLIENT_URL}/posts/${post._id}`;
 
-      const html = `
-        <!DOCTYPE html>
-        <html lang="sq">
-          <head>
-            <meta charset="UTF-8" />
-            <title>${post.title}</title>
-            <meta name="description" content="${description}">
-            <meta property="og:type" content="article">
-            <meta property="og:title" content="${post.title}">
-            <meta property="og:description" content="${description}">
-            <meta property="og:image" content="${imageUrl}">
-            <meta property="og:url" content="${fullUrl}">
-            <meta name="twitter:card" content="summary_large_image">
-            <meta name="twitter:title" content="${post.title}">
-            <meta name="twitter:description" content="${description}">
-            <meta name="twitter:image" content="${imageUrl}">
-            <meta http-equiv="refresh" content="0; url=${fullUrl}" />
-          </head>
-          <body>
-            <p>Redirecting to <a href="${fullUrl}">${fullUrl}</a></p>
-          </body>
-        </html>
-      `;
-      return res.send(html);
+      return res.send(`<!DOCTYPE html>
+<html lang="sq">
+<head>
+  <meta charset="utf-8">
+  <title>${post.title}</title>
+  <meta name="description"       content="${desc}">
+  <meta property="og:type"        content="article">
+  <meta property="og:title"       content="${post.title}">
+  <meta property="og:description" content="${desc}">
+  <meta property="og:image"       content="${img}">
+  <meta property="og:url"         content="${url}">
+  <meta name="twitter:card"       content="summary_large_image">
+  <meta http-equiv="refresh"      content="0; url=${url}">
+</head><body>Redirecting…</body></html>`);
     } catch (err) {
-      console.error('Error generating preview:', err);
+      console.error('Preview error:', err);
       return res.status(500).send('Error generating preview');
     }
   }
 
-  // Not a bot, serve 404 or pass to React frontend (if you serve frontend here)
-  res.status(404).send('Not found');
+  // Not a bot → fall through to React
+  res.sendFile(path.join(__dirname, 'client/dist/index.html'));
 });
 
-// Register your API routes here
-const authRoutes = require('./routes/authRoutes');
-app.use('/api/auth', authRoutes);
+// 2) YOUR API ROUTES
+app.use('/api/auth',  require('./routes/authRoutes'));
+app.use('/api/posts', require('./routes/postRoutes'));
 
-const postRoutes = require('./routes/postRoutes');
-app.use('/api/posts', postRoutes);
+// 3) STATIC ASSETS (React build)
+app.use(express.static(path.join(__dirname, 'client/dist')));
+
+// 4) CATCH-ALL (client-side routing)
+//    This RegExp matches any path (without confusing path-to-regexp)
+app.get(/.*/, (req, res) => {
+  res.sendFile(path.join(__dirname, 'client/dist/index.html'));
+});
+
+// 5) START SERVER & CONNECT DB
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser:true, useUnifiedTopology:true })
+  .then(() => {
+    const PORT = process.env.PORT || 5000;
+    app.listen(PORT, () => console.log(`🚀 Listening on port ${PORT}`));
+  })
+  .catch(err => {
+    console.error('DB connection failed:', err);
+    process.exit(1);
+  });

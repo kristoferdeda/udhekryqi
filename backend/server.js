@@ -3,15 +3,17 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const path = require('path');
-const Post = require('./models/Post');  // Your Post model
+const Post = require('./models/Post'); // Your Post model
 
 dotenv.config();
 
 const app = express();
 
+// Middleware
 app.use(cors());
 app.use(express.json());
 
+// Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)
 .then(() => {
   console.log('✅ Connected to MongoDB');
@@ -20,10 +22,12 @@ mongoose.connect(process.env.MONGO_URI)
     console.log(`🚀 Server running on port ${PORT}`);
   });
 })
-.catch((error) => {
-  console.error('❌ MongoDB connection failed:', error.message);
+.catch(err => {
+  console.error('❌ MongoDB connection failed:', err.message);
+  process.exit(1);
 });
 
+// Social media preview route (must be BEFORE /api/posts routes)
 app.get('/posts/:id', async (req, res) => {
   const userAgent = req.headers['user-agent'] || '';
   const isBot = /facebookexternalhit|twitterbot|linkedinbot|discordbot|telegrambot|whatsapp/i.test(userAgent);
@@ -34,9 +38,11 @@ app.get('/posts/:id', async (req, res) => {
       const post = await Post.findById(postId);
       if (!post) return res.status(404).send('Post not found');
 
+      // Clean description for meta
       const description = (post.content || '').replace(/<[^>]+>/g, '').slice(0, 160) || 'Lexo artikullin në Udhëkryqi.';
-      const imageUrl = post.media?.[0] || process.env.DEFAULT_OG_IMAGE || `${process.env.CLIENT_URL}/Logo-horizontal.png`;
-      const fullUrl = `${process.env.CLIENT_URL}/posts/${post._id}`;
+      const imageUrl = post.media?.[0] || process.env.DEFAULT_IMAGE_URL || 'https://udhekryqi.com/Logo-horizontal.png';
+      const frontendUrl = process.env.FRONTEND_URL
+      const fullUrl = `${frontendUrl}/posts/${post._id}`;
 
       const html = `
         <!DOCTYPE html>
@@ -57,7 +63,7 @@ app.get('/posts/:id', async (req, res) => {
             <meta http-equiv="refresh" content="0; url=${fullUrl}" />
           </head>
           <body>
-            <p>Redirecting...</p>
+            <p>Redirecting to <a href="${fullUrl}">${fullUrl}</a></p>
           </body>
         </html>
       `;
@@ -68,9 +74,11 @@ app.get('/posts/:id', async (req, res) => {
     }
   }
 
+  // Not a bot, serve 404 or pass to React frontend (if you serve frontend here)
   res.status(404).send('Not found');
 });
 
+// Register your API routes here
 const authRoutes = require('./routes/authRoutes');
 app.use('/api/auth', authRoutes);
 

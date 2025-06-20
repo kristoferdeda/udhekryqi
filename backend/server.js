@@ -43,16 +43,20 @@ const baseURL = (process.env.CLIENT_URL || '').replace(/\/$/, '');
 <head>
   <meta charset="utf-8">
   <title>${post.title}</title>
-  <meta name="description"       content="${description}">
-  <meta property="og:type"        content="article">
-  <meta property="og:title"       content="${post.title}">
-  <meta property="og:description" content="${description}">
-  <meta property="og:image"       content="${imageUrl}">
-  <meta property="og:url"         content="${postUrl}">
-  <meta name="twitter:card"       content="summary_large_image">
-  <meta http-equiv="refresh"      content="0; url=${postUrl}">
+  <meta name="description"        content="${description}">
+  <meta property="og:type"         content="article">
+  <meta property="og:title"        content="${post.title}">
+  <meta property="og:description"  content="${description}">
+  <meta property="og:image"        content="${imageUrl}">
+  <meta property="og:url"          content="${postUrl}">
+  <meta name="twitter:card"        content="summary_large_image">
+  <meta name="twitter:title"       content="${post.title}">
+  <meta name="twitter:description" content="${description}">
+  <meta name="twitter:image"       content="${imageUrl}">
+  <meta http-equiv="refresh"       content="0; url=${postUrl}">
 </head>
-<body>Redirecting…</body></html>`);
+<body>Redirecting…</body>
+</html>`);
     } catch (err) {
       console.error('Preview error:', err);
       return res.status(500).send('Error generating preview');
@@ -60,19 +64,19 @@ const baseURL = (process.env.CLIENT_URL || '').replace(/\/$/, '');
   });
 });
 
-// 2) API routes
+// 2) YOUR API ROUTES
 app.use('/api/auth',  require('./routes/authRoutes'));
 app.use('/api/posts', require('./routes/postRoutes'));
 
-// 3) Serve React build assets
+// 3) STATIC ASSETS (React build)
 app.use(express.static(path.join(__dirname, 'client/dist')));
 
-// 4) Catch-all: for any other route, send React app
+// 4) CATCH-ALL (client-side routing)
 app.get(/.*/, (req, res) => {
   res.sendFile(path.join(__dirname, 'client/dist/index.html'));
 });
 
-// 5) Connect to MongoDB & start server
+// 5) START SERVER & CONNECT DB
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser:    true,
   useUnifiedTopology: true,

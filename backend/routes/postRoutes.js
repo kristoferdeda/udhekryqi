@@ -9,8 +9,7 @@ const {
   deletePost,
   toggleLike,
   addComment,
-  deleteComment,
-  getPostPreview
+  deleteComment
 } = require('../controllers/postController');
 
 const { verifyToken, isAdmin } = require('../middleware/auth');
@@ -27,7 +26,5 @@ router.delete('/:id', verifyToken, isAdmin, deletePost);
 router.post('/:id/like', verifyToken, toggleLike);
 router.post('/:id/comments', verifyToken, addComment);
 router.delete('/:postId/comments/:commentId', verifyToken, deleteComment);
-// Public preview route
-router.get('/preview/:id', getPostPreview);
 
 module.exports = router;

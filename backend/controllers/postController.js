@@ -6,28 +6,41 @@ const { buildNewPostEmailHtml } = require('../utils/newsletter');
 
 async function notifySubscribersAboutNewPost(post) {
   try {
-    const subscribers = await Subscriber.find(); // all subscribers, no verification needed
-    if (!subscribers.length) return;
+    const subscribers = await Subscriber.find();
+    console.log('[Newsletter] Found subscribers:', subscribers.length);
+
+    if (!subscribers.length) {
+      console.log('[Newsletter] No subscribers, skipping send.');
+      return;
+    }
 
     const subject = `Artikull i ri në Udhëkryqi: ${post.title}`;
 
     await Promise.all(
-      subscribers.map(sub => {
+      subscribers.map((sub) => {
+        console.log('[Newsletter] Sending to:', sub.email, 'token:', sub.unsubscribeToken);
         const html = buildNewPostEmailHtml(post, sub.unsubscribeToken);
         return sendEmail(sub.email, subject, html);
       })
     );
+
+    console.log('[Newsletter] Done sending emails for post:', post._id);
   } catch (err) {
     console.error('Newsletter send error:', err);
   }
 }
 
+
 const createPost = async (req, res) => {
   try {
     const { title, content, tags, media } = req.body;
+    console.log('[CreatePost] Request by user:', req.user?.id, 'title:', title);
 
     const user = await User.findById(req.user.id);
-    if (!user) return res.status(404).json({ message: 'Author not found' });
+    if (!user) {
+      console.log('[CreatePost] Author not found');
+      return res.status(404).json({ message: 'Author not found' });
+    }
 
     const newPost = await Post.create({
       title,
@@ -40,13 +53,20 @@ const createPost = async (req, res) => {
         : user.name,
     });
 
-    notifySubscribersAboutNewPost(newPost);
-    
+    console.log('[CreatePost] Post created with id:', newPost._id);
+
+    // 🔍 IMPORTANT: await for now, so errors show immediately
+    await notifySubscribersAboutNewPost(newPost);
+
+    console.log('[CreatePost] Finished notifySubscribersAboutNewPost for:', newPost._id);
+
     res.status(201).json(newPost);
   } catch (err) {
+    console.error('[CreatePost] Error:', err);
     res.status(500).json({ message: 'Failed to create post', error: err.message });
   }
 };
+
 
 
 // Get all posts

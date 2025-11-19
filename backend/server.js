@@ -67,6 +67,7 @@ const baseURL = (process.env.CLIENT_URL || '').replace(/\/$/, '');
 // 2) YOUR API ROUTES
 app.use('/api/auth',  require('./routes/authRoutes'));
 app.use('/api/posts', require('./routes/postRoutes'));
+app.use('/api/subscriptions', require('./routes/subscriptionRoutes'));
 
 // 3) STATIC ASSETS (React build)
 app.use(express.static(path.join(__dirname, 'client/dist')));

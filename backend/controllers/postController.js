@@ -1,5 +1,26 @@
 const Post = require('../models/Post');
 const User = require('../models/User');
+const Subscriber = require('../models/Subscriber');
+const sendEmail = require('../utils/sendEmail');
+const { buildNewPostEmailHtml } = require('../utils/newsletter');
+
+async function notifySubscribersAboutNewPost(post) {
+  try {
+    const subscribers = await Subscriber.find(); // all subscribers, no verification needed
+    if (!subscribers.length) return;
+
+    const subject = `Artikull i ri në Udhëkryqi: ${post.title}`;
+
+    await Promise.all(
+      subscribers.map(sub => {
+        const html = buildNewPostEmailHtml(post, sub.unsubscribeToken);
+        return sendEmail(sub.email, subject, html);
+      })
+    );
+  } catch (err) {
+    console.error('Newsletter send error:', err);
+  }
+}
 
 const createPost = async (req, res) => {
   try {
@@ -19,7 +40,8 @@ const createPost = async (req, res) => {
         : user.name,
     });
 
-
+    notifySubscribersAboutNewPost(newPost);
+    
     res.status(201).json(newPost);
   } catch (err) {
     res.status(500).json({ message: 'Failed to create post', error: err.message });

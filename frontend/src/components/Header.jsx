@@ -116,6 +116,14 @@ export default function Header() {
                     >
                       Regjistrohu
                     </Link>
+                    {/* Mobile Abonohu */}
+                    <Link
+                      to="/abonohu"
+                      className="block px-4 py-2 hover:bg-gray-100 text-red-700 font-semibold"
+                      onClick={() => setShowMenu(false)}
+                    >
+                      Abonohu
+                    </Link>
                   </div>
                 )}
               </div>
@@ -133,6 +141,13 @@ export default function Header() {
                   className="w-24 text-center py-1 bg-black text-white rounded text-sm hover:bg-gray-800"
                 >
                   Regjistrohu
+                </Link>
+                {/* NEW red Abonohu button */}
+                <Link
+                  to="/abonohu"
+                  className="w-28 text-center py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700"
+                >
+                  Abonohu
                 </Link>
               </div>
             </>

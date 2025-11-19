@@ -16,6 +16,7 @@ import RrethNesh from './pages/RrethNesh';
 import Kontakt from './pages/Kontakt';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
+import Abonohu from "./pages/Abonohu";
 
 
 
@@ -41,6 +42,7 @@ function App() {
           <Route path="/contact" element={<Kontakt />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
+          <Route path="/abonohu" element={<Abonohu />} />
         </Routes>
       </main>
       <Footer />
